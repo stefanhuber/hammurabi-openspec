@@ -1,9 +1,12 @@
 import { calculateYield } from "./harvest.js";
 import { calculateStarvation, calculateImmigration } from "./population.js";
+import { rollPlague } from "./plague.js";
+import { rollRats } from "./rats.js";
 
 const SEED_COST_PER_ACRE = 0.5;
 const ACRES_PER_PERSON = 10;
 const MAX_TURNS = 10;
+const STARVATION_DEFEAT_THRESHOLD = 0.45;
 
 export function validateFoodAllocation(grainForFood, state) {
   if (!Number.isInteger(grainForFood) || grainForFood < 0) {
@@ -55,16 +58,29 @@ export function processTurn(state, grainForFood, acresToPlant, landTradeInfo) {
   const seedCost = acresToPlant * SEED_COST_PER_ACRE;
   const grainAfterFoodAndSeeds = state.grain - grainForFood - seedCost;
 
-  const starvation = calculateStarvation(state.population, grainForFood);
+  // Plague: applied before starvation
+  const plagueResult = rollPlague(state.population);
+  const postPlaguePopulation = state.population - plagueResult.deaths;
+
+  // Starvation: calculated against post-plague population
+  const starvation = calculateStarvation(postPlaguePopulation, grainForFood);
   const survivingPopulation = starvation.survivingPopulation;
+
+  // Starvation defeat: more than 45% of post-plague population starved
+  const starvationDefeat =
+    postPlaguePopulation > 0 &&
+    starvation.peopleDied > STARVATION_DEFEAT_THRESHOLD * postPlaguePopulation;
 
   const immigrants = starvation.peopleDied === 0
     ? calculateImmigration(state.land, grainAfterFoodAndSeeds, survivingPopulation)
     : 0;
 
+  // Harvest and rats
   const yieldPerAcre = calculateYield();
   const totalHarvest = acresToPlant * yieldPerAcre;
-  const newGrain = grainAfterFoodAndSeeds + totalHarvest;
+  const ratsResult = rollRats(totalHarvest);
+  const harvestAfterRats = totalHarvest - ratsResult.grainDestroyed;
+  const newGrain = grainAfterFoodAndSeeds + harvestAfterRats;
 
   return {
     newState: {
@@ -82,6 +98,11 @@ export function processTurn(state, grainForFood, acresToPlant, landTradeInfo) {
       peopleFed: starvation.peopleFed,
       peopleDied: starvation.peopleDied,
       immigrants,
+      plagueOccurred: plagueResult.occurred,
+      plagueDeaths: plagueResult.deaths,
+      ratsOccurred: ratsResult.occurred,
+      grainDestroyedByRats: ratsResult.grainDestroyed,
+      starvationDefeat,
       ...(landTradeInfo || {}),
     },
   };
