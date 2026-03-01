@@ -3,12 +3,16 @@ const elements = {
   population: () => document.getElementById("population"),
   land: () => document.getElementById("land"),
   grain: () => document.getElementById("grain"),
+  landPrice: () => document.getElementById("land-price"),
+  buyInput: () => document.getElementById("buy-input"),
+  sellInput: () => document.getElementById("sell-input"),
   foodInput: () => document.getElementById("food-input"),
   acresInput: () => document.getElementById("acres-input"),
   submitBtn: () => document.getElementById("submit-btn"),
   errorMessage: () => document.getElementById("error-message"),
   playerInput: () => document.getElementById("player-input"),
   turnResults: () => document.getElementById("turn-results"),
+  landTradeResult: () => document.getElementById("land-trade-result"),
   yieldPerAcre: () => document.getElementById("yield-per-acre"),
   totalHarvest: () => document.getElementById("total-harvest"),
   peopleDied: () => document.getElementById("people-died"),
@@ -28,7 +32,29 @@ export function renderState(state) {
   elements.grain().textContent = state.grain;
 }
 
+export function showLandPrice(price) {
+  elements.landPrice().textContent = price;
+}
+
+export function getBuyInput() {
+  return parseInt(elements.buyInput().value, 10);
+}
+
+export function getSellInput() {
+  return parseInt(elements.sellInput().value, 10);
+}
+
+
+
 export function showTurnResults(turnResult) {
+  if (turnResult.acresToBuy > 0) {
+    elements.landTradeResult().textContent = `You bought ${turnResult.acresToBuy} acres at ${turnResult.landPrice} bushels each.`;
+  } else if (turnResult.acresToSell > 0) {
+    elements.landTradeResult().textContent = `You sold ${turnResult.acresToSell} acres at ${turnResult.landPrice} bushels each.`;
+  } else {
+    elements.landTradeResult().textContent = "No land was traded.";
+  }
+
   elements.yieldPerAcre().textContent = turnResult.yieldPerAcre;
   elements.totalHarvest().textContent = turnResult.totalHarvest;
 
@@ -80,6 +106,8 @@ export function resetUI() {
   elements.playerInput().hidden = false;
   elements.turnResults().hidden = true;
   elements.gameOver().hidden = true;
+  elements.buyInput().value = "0";
+  elements.sellInput().value = "0";
   elements.foodInput().value = "";
   elements.acresInput().value = "";
   clearError();
@@ -88,6 +116,8 @@ export function resetUI() {
 export function showInputPhase() {
   elements.playerInput().hidden = false;
   elements.turnResults().hidden = true;
+  elements.buyInput().value = "0";
+  elements.sellInput().value = "0";
   elements.foodInput().value = "";
   elements.acresInput().value = "";
   clearError();

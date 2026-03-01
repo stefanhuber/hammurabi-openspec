@@ -21,6 +21,15 @@
       </section>
 
       <section id="player-input">
+        <p>Land price: <span id="land-price"></span> bushels per acre</p>
+        <label for="buy-input">How many acres do you wish to buy?</label>
+        <div class="input-row">
+          <input type="number" id="buy-input" min="0" value="0" />
+        </div>
+        <label for="sell-input">How many acres do you wish to sell?</label>
+        <div class="input-row">
+          <input type="number" id="sell-input" min="0" value="0" />
+        </div>
         <label for="food-input">How many bushels do you wish to feed your people?</label>
         <div class="input-row">
           <input type="number" id="food-input" min="0" />
@@ -28,13 +37,14 @@
         <label for="acres-input">How many acres do you wish to plant with seed?</label>
         <div class="input-row">
           <input type="number" id="acres-input" min="0" />
-          <button id="submit-btn">Confirm</button>
         </div>
+        <button id="submit-btn">Submit</button>
         <p id="error-message" class="error" hidden></p>
       </section>
 
       <section id="turn-results" hidden>
         <h2>Year Report</h2>
+        <p id="land-trade-result"></p>
         <p id="people-died"></p>
         <p id="immigrants-arrived"></p>
         <p>Yield per acre: <span id="yield-per-acre"></span> bushels</p>
