@@ -12,16 +12,19 @@ The game was built through a series of structured iterations. Each iteration:
 * Introduced a clearly defined feature
 * Was guided by a written specification before implementation
 
-All feature specifications live in the `/openspec` directory, where specs are grouped by domain.
+All feature specifications live in the `/openspec` directory, where specs are grouped by domain. Archived change proposals are in `/openspec/changes/archive/`.
 
 ### Iteration Order
 
 The project evolved in the following sequence:
 
-1. `core game loop`
-2. `food immigration dynamics`
-3. `land market`
-4. `random events`
+1. `hammurabi-game` — core game loop, state management, harvest, and basic UI
+2. `github-workflows` — CI pipeline and deploy pipeline
+3. `population-mechanics` — feeding, starvation, and immigration
+4. `land-market` — buying and selling land at randomised prices
+5. `random-events` — plague and rat infestation
+6. `single-step-ui` — consolidated single-step turn input
+7. `input-grid-layout` — compact 2×2 grid layout for player inputs
 
 Each step builds incrementally on the previous one, ensuring clarity of scope, maintainability, and steady product growth.
 
@@ -31,11 +34,12 @@ Each step builds incrementally on the previous one, ensuring clarity of scope, m
 
 Each turn represents one year. You start with **100 people**, **1,000 acres** of land, and **2,800 bushels** of grain. After 10 years, if your city-state survives, you win.
 
-Each year you make three decisions:
+Each year you make four decisions via a compact input grid:
 
-1. **Buy or sell land** — before the harvest, at this year's market price
-2. **Feed your people** — allocate grain to prevent starvation
-3. **Plant crops** — choose how many acres to sow for this year's harvest
+1. **Buy land** — purchase acres at this year's market price
+2. **Sell land** — sell acres you own at this year's market price
+3. **Feed your people** — allocate bushels of grain to prevent starvation
+4. **Plant crops** — choose how many acres to sow for this year's harvest
 
 ---
 
@@ -45,7 +49,6 @@ Land is bought and sold at a price randomly set each year between **17 and 26 bu
 
 - You can buy acres if you have enough grain to cover the cost
 - You can sell acres you currently own
-- You cannot buy and sell in the same turn
 
 ---
 
@@ -61,7 +64,7 @@ So with 50 people you can plant at most 500 acres, and planting 200 acres costs 
 At harvest time, each planted acre yields a random **2–6 bushels** (uniform). Net grain from the harvest is:
 
 ```
-net harvest = (acres planted × yield per acre) − seed cost
+harvest = acres planted × yield per acre
 ```
 
 ---
@@ -99,7 +102,7 @@ Two disasters can strike each year, each resolved independently:
 | **Rat infestation** | 40% | Rats eat **10–30%** of that year's harvest before it reaches storage |
 | **Plague** | 15% | Half the population dies at year end |
 
-Rats reduce the grain added to your stores this turn. Plague strikes after immigration, halving the final population count.
+Rats reduce the grain added to your stores this turn. Plague strikes before starvation is calculated, halving the population.
 
 ---
 
@@ -107,14 +110,14 @@ Rats reduce the grain added to your stores this turn. Plague strikes after immig
 
 Each year resolves in this sequence:
 
-1. Land transaction (buy/sell at current price)
-2. Harvest calculated (yield randomised)
-3. Rats checked — if they strike, a fraction of the harvest is lost
-4. Grain spent on food deducted; survivors counted
-5. Mass starvation check (> 45% dead → instant loss)
-6. Immigration calculated (only if no starvation occurred)
-7. Plague checked — if it strikes, half the post-immigration population dies
-8. New land price generated for next year
+1. Land transaction (buy/sell)
+2. Food and seed grain deducted
+3. Plague check — if it strikes, half the population dies
+4. Starvation calculated (against post-plague population)
+5. Mass starvation check (>45% → instant defeat)
+6. Immigration calculated (pre-harvest grain, only if no starvation)
+7. Harvest calculated (yield randomised)
+8. Rats check — if they strike, a fraction of harvest is lost
 
 ---
 
@@ -142,12 +145,19 @@ Each year resolves in this sequence:
 
 ## Development
 
+### Tech Stack
+
+- Vanilla JavaScript (ESM modules)
+- [Vite](https://vite.dev/) (dev server & build)
+- [Vitest](https://vitest.dev/) (test runner — 90 tests)
+- ESLint + Prettier (linting & formatting)
+
 ### Commands
 
 ```bash
 npm run dev     # Start Vite dev server
-npm test        # Run all tests (Vitest)
-npm run lint    # Lint src/ and tests/
+npm test        # Run all tests (Vitest, 90 tests)
+npm run lint    # Lint src/
 npm run build   # Production build
 ```
 
@@ -155,15 +165,31 @@ npm run build   # Production build
 
 ```
 src/
-  config.js       # Game constants
-  game.js         # Core loop: createGameState, playTurn, checkGameOver
-  harvest.js      # Harvest calculation
-  population.js   # Survivors, starvation, immigration
-  events.js       # Plague and rat infestation
-  validation.js   # Input validation
-  ui.js           # DOM interactions
-  main.js         # Entry point
-tests/            # Vitest test suite (124 tests)
+  game-state.js       # Initial state factory
+  game-state.test.js
+  harvest.js          # Harvest yield calculation
+  harvest.test.js
+  land-market.js      # Land price generation, trade validation & execution
+  land-market.test.js
+  plague.js           # Plague random event
+  plague.test.js
+  population.js       # Starvation & immigration
+  population.test.js
+  rats.js             # Rat infestation random event
+  rats.test.js
+  turn.js             # Turn processing, input validation, game-over check
+  turn.test.js
+  ui.js               # All DOM interactions
+  main.js             # Entry point, wires UI callbacks to game logic
+  styles.css          # Layout & theming
 index.html
-style.css
+openspec/             # Specifications & archived change proposals
 ```
+
+### Conventions
+
+- **Pure functions** for all game logic — no side effects, easy to test
+- **UI module** (`ui.js`) is the only module that touches the DOM
+- **ESM imports** throughout (`import`/`export`)
+- Tests use Vitest with `vi.spyOn` for mocking (e.g. randomness)
+- No classes — plain functions and object literals

@@ -53,23 +53,29 @@ h1 {
   margin-bottom: 1.5rem;
 }
 
-#player-input label {
+.input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.input-cell label {
   display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
 }
 
-.input-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-#acres-input {
+.input-cell input {
+  width: 100%;
   padding: 0.5rem;
   font-size: 1rem;
   border: 2px solid #c9a96e;
   border-radius: 4px;
-  width: 150px;
+}
+
+#submit-btn {
+  margin-top: 1rem;
 }
 
 button {

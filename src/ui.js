@@ -126,8 +126,8 @@ export function resetUI() {
   elements.gameOver().hidden = true;
   elements.buyInput().value = "0";
   elements.sellInput().value = "0";
-  elements.foodInput().value = "";
-  elements.acresInput().value = "";
+  elements.foodInput().value = "0";
+  elements.acresInput().value = "0";
   clearError();
 }
 
@@ -136,8 +136,8 @@ export function showInputPhase() {
   elements.turnResults().hidden = true;
   elements.buyInput().value = "0";
   elements.sellInput().value = "0";
-  elements.foodInput().value = "";
-  elements.acresInput().value = "";
+  elements.foodInput().value = "0";
+  elements.acresInput().value = "0";
   clearError();
 }
 
