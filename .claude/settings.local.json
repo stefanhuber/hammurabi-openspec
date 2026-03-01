@@ -13,7 +13,8 @@
       "Bash(npm install:*)",
       "Bash(openspec:*)",
       "Bash(mv:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
