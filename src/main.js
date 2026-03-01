@@ -1,5 +1,10 @@
 import { createInitialState } from "./game-state.js";
-import { validateAcresToPlant, processTurn, checkGameOver } from "./turn.js";
+import {
+  validateFoodAllocation,
+  validateAcresToPlant,
+  processTurn,
+  checkGameOver,
+} from "./turn.js";
 import {
   renderState,
   showTurnResults,
@@ -8,6 +13,7 @@ import {
   showGameOver,
   resetUI,
   showInputPhase,
+  getFoodInput,
   getAcresInput,
   onSubmit,
   onNextTurn,
@@ -23,21 +29,35 @@ function startGame() {
 }
 
 function handleSubmit() {
+  const grainForFood = getFoodInput();
   const acresToPlant = getAcresInput();
 
-  if (isNaN(acresToPlant)) {
-    showError("Please enter a number.");
+  if (isNaN(grainForFood)) {
+    showError("Please enter a number for food allocation.");
     return;
   }
 
-  const validation = validateAcresToPlant(acresToPlant, state);
-  if (!validation.valid) {
-    showError(validation.error);
+  if (isNaN(acresToPlant)) {
+    showError("Please enter a number for acres to plant.");
+    return;
+  }
+
+  const foodValidation = validateFoodAllocation(grainForFood, state);
+  if (!foodValidation.valid) {
+    showError(foodValidation.error);
+    return;
+  }
+
+  const grainAfterFood = state.grain - grainForFood;
+  const stateForPlanting = { ...state, grain: grainAfterFood };
+  const acresValidation = validateAcresToPlant(acresToPlant, stateForPlanting);
+  if (!acresValidation.valid) {
+    showError(acresValidation.error);
     return;
   }
 
   clearError();
-  const { newState, turnResult } = processTurn(state, acresToPlant);
+  const { newState, turnResult } = processTurn(state, grainForFood, acresToPlant);
   state = newState;
   renderState(state);
   showTurnResults(turnResult);

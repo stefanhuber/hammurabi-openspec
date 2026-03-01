@@ -1,8 +1,24 @@
 import { calculateYield } from "./harvest.js";
+import { calculateStarvation, calculateImmigration } from "./population.js";
 
 const SEED_COST_PER_ACRE = 0.5;
 const ACRES_PER_PERSON = 10;
 const MAX_TURNS = 10;
+
+export function validateFoodAllocation(grainForFood, state) {
+  if (!Number.isInteger(grainForFood) || grainForFood < 0) {
+    return { valid: false, error: "Food allocation must be a non-negative integer." };
+  }
+
+  if (grainForFood > state.grain) {
+    return {
+      valid: false,
+      error: `Not enough grain. You only have ${state.grain} bushels.`,
+    };
+  }
+
+  return { valid: true };
+}
 
 export function validateAcresToPlant(acresToPlant, state) {
   if (!Number.isInteger(acresToPlant) || acresToPlant < 0) {
@@ -35,24 +51,37 @@ export function validateAcresToPlant(acresToPlant, state) {
   return { valid: true };
 }
 
-export function processTurn(state, acresToPlant) {
+export function processTurn(state, grainForFood, acresToPlant) {
   const seedCost = acresToPlant * SEED_COST_PER_ACRE;
+  const grainAfterFoodAndSeeds = state.grain - grainForFood - seedCost;
+
+  const starvation = calculateStarvation(state.population, grainForFood);
+  const survivingPopulation = starvation.survivingPopulation;
+
+  const immigrants = starvation.peopleDied === 0
+    ? calculateImmigration(state.land, grainAfterFoodAndSeeds, survivingPopulation)
+    : 0;
+
   const yieldPerAcre = calculateYield();
   const totalHarvest = acresToPlant * yieldPerAcre;
-
-  const newGrain = state.grain - seedCost + totalHarvest;
+  const newGrain = grainAfterFoodAndSeeds + totalHarvest;
 
   return {
     newState: {
       ...state,
       grain: newGrain,
+      population: survivingPopulation + immigrants,
       turn: state.turn + 1,
     },
     turnResult: {
+      grainForFood,
       acresToPlant,
       seedCost,
       yieldPerAcre,
       totalHarvest,
+      peopleFed: starvation.peopleFed,
+      peopleDied: starvation.peopleDied,
+      immigrants,
     },
   };
 }
@@ -60,6 +89,10 @@ export function processTurn(state, acresToPlant) {
 export function checkGameOver(state) {
   if (state.turn > MAX_TURNS) {
     return { gameOver: true, won: true };
+  }
+
+  if (state.population === 0) {
+    return { gameOver: true, won: false };
   }
 
   const maxPlantable = Math.min(
