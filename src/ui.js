@@ -3,6 +3,7 @@ const elements = {
   population: () => document.getElementById("population"),
   land: () => document.getElementById("land"),
   grain: () => document.getElementById("grain"),
+  foodInput: () => document.getElementById("food-input"),
   acresInput: () => document.getElementById("acres-input"),
   submitBtn: () => document.getElementById("submit-btn"),
   errorMessage: () => document.getElementById("error-message"),
@@ -10,6 +11,8 @@ const elements = {
   turnResults: () => document.getElementById("turn-results"),
   yieldPerAcre: () => document.getElementById("yield-per-acre"),
   totalHarvest: () => document.getElementById("total-harvest"),
+  peopleDied: () => document.getElementById("people-died"),
+  immigrantsArrived: () => document.getElementById("immigrants-arrived"),
   nextTurnBtn: () => document.getElementById("next-turn-btn"),
   gameOver: () => document.getElementById("game-over"),
   gameOverTitle: () => document.getElementById("game-over-title"),
@@ -28,6 +31,19 @@ export function renderState(state) {
 export function showTurnResults(turnResult) {
   elements.yieldPerAcre().textContent = turnResult.yieldPerAcre;
   elements.totalHarvest().textContent = turnResult.totalHarvest;
+
+  if (turnResult.peopleDied > 0) {
+    elements.peopleDied().textContent = `${turnResult.peopleDied} people starved.`;
+  } else {
+    elements.peopleDied().textContent = "No one starved.";
+  }
+
+  if (turnResult.immigrants > 0) {
+    elements.immigrantsArrived().textContent = `${turnResult.immigrants} immigrants arrived.`;
+  } else {
+    elements.immigrantsArrived().textContent = "";
+  }
+
   elements.turnResults().hidden = false;
   elements.playerInput().hidden = true;
 }
@@ -64,6 +80,7 @@ export function resetUI() {
   elements.playerInput().hidden = false;
   elements.turnResults().hidden = true;
   elements.gameOver().hidden = true;
+  elements.foodInput().value = "";
   elements.acresInput().value = "";
   clearError();
 }
@@ -71,8 +88,13 @@ export function resetUI() {
 export function showInputPhase() {
   elements.playerInput().hidden = false;
   elements.turnResults().hidden = true;
+  elements.foodInput().value = "";
   elements.acresInput().value = "";
   clearError();
+}
+
+export function getFoodInput() {
+  return parseInt(elements.foodInput().value, 10);
 }
 
 export function getAcresInput() {
