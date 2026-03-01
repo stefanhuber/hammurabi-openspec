@@ -51,7 +51,7 @@ export function validateAcresToPlant(acresToPlant, state) {
   return { valid: true };
 }
 
-export function processTurn(state, grainForFood, acresToPlant) {
+export function processTurn(state, grainForFood, acresToPlant, landTradeInfo) {
   const seedCost = acresToPlant * SEED_COST_PER_ACRE;
   const grainAfterFoodAndSeeds = state.grain - grainForFood - seedCost;
 
@@ -82,6 +82,7 @@ export function processTurn(state, grainForFood, acresToPlant) {
       peopleFed: starvation.peopleFed,
       peopleDied: starvation.peopleDied,
       immigrants,
+      ...(landTradeInfo || {}),
     },
   };
 }

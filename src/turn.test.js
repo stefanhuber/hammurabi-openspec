@@ -182,6 +182,23 @@ describe("processTurn", () => {
     const { turnResult } = processTurn(state, 2000, 100);
     expect(turnResult.immigrants).toBe(2);
   });
+
+  it("should include land trade info in turn result when provided", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    const landTradeInfo = { acresToBuy: 0, acresToSell: 50, landPrice: 20, tradeCost: -1000 };
+    const { turnResult } = processTurn(state, 2000, 100, landTradeInfo);
+    expect(turnResult.acresToBuy).toBe(0);
+    expect(turnResult.acresToSell).toBe(50);
+    expect(turnResult.landPrice).toBe(20);
+  });
+
+  it("should work without land trade info", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    const { turnResult } = processTurn(state, 2000, 100);
+    expect(turnResult.acresToBuy).toBeUndefined();
+  });
 });
 
 describe("checkGameOver", () => {

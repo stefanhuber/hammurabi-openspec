@@ -1,9 +1,4 @@
-### Requirement: Display current game state
-The UI SHALL display the current turn number, population, land acres, and grain stock to the player at the start of each turn.
-
-#### Scenario: Player sees resource summary
-- **WHEN** a new turn begins
-- **THEN** the UI SHALL show the current turn number, population count, land acres, and bushels of grain in stock
+## MODIFIED Requirements
 
 ### Requirement: Accept player input for planting
 The UI SHALL provide an input mechanism for the player to specify how many acres to plant as part of a single combined input form alongside land trade and food allocation inputs.
@@ -16,24 +11,6 @@ The UI SHALL provide an input mechanism for the player to specify how many acres
 - **WHEN** the player enters a value that violates resource constraints (grain, people, or land)
 - **THEN** the UI SHALL display an error message and allow the player to re-enter
 
-### Requirement: Display turn results
-After processing a turn, the UI SHALL display the harvest results including yield per acre and total grain harvested.
-
-#### Scenario: Player sees harvest outcome
-- **WHEN** a turn is processed
-- **THEN** the UI SHALL show the yield per acre and total bushels harvested
-
-### Requirement: Display end-game message
-The UI SHALL display a message when the game ends.
-
-#### Scenario: Success message after 10 turns
-- **WHEN** the player completes 10 turns
-- **THEN** the UI SHALL display a success/victory message
-
-#### Scenario: Failure message when game cannot continue
-- **WHEN** the player cannot continue (cannot complete 10 years)
-- **THEN** the UI SHALL display a failure message
-
 ### Requirement: Accept food allocation input
 The UI SHALL provide an input mechanism for the player to specify how many bushels of grain to allocate as food as part of a single combined input form.
 
@@ -44,6 +21,8 @@ The UI SHALL provide an input mechanism for the player to specify how many bushe
 #### Scenario: Invalid food allocation is rejected
 - **WHEN** the player enters a food allocation that exceeds the available grain (after land trade)
 - **THEN** the UI SHALL display an error message and allow the player to re-enter
+
+## ADDED Requirements
 
 ### Requirement: Single combined input form
 The UI SHALL present all four player inputs (acres to buy, acres to sell, food allocation, acres to plant) in a single form section with one submit button.
@@ -67,20 +46,8 @@ The UI SHALL NOT use a multi-step process to collect player inputs within a sing
 - **WHEN** the player is entering turn decisions
 - **THEN** the UI SHALL NOT require a separate trade confirmation before showing food and planting inputs
 
-### Requirement: Display starvation results
-The UI SHALL display starvation information in the turn results when people have starved.
+## REMOVED Requirements
 
-#### Scenario: Starvation reported in turn results
-- **WHEN** a turn is processed and people have starved
-- **THEN** the UI SHALL show the number of people who starved
-
-#### Scenario: No starvation reported when all fed
-- **WHEN** a turn is processed and no one starved
-- **THEN** the UI SHALL indicate that no one starved
-
-### Requirement: Display immigration results
-The UI SHALL display immigration information in the turn results when immigration occurs.
-
-#### Scenario: Immigration reported in turn results
-- **WHEN** a turn is processed and immigrants arrive
-- **THEN** the UI SHALL show the number of immigrants who arrived
+### Requirement: Land trade has separate confirmation
+**Reason**: Replaced by the single combined input form. The land trade inputs are now part of the unified form and validated together on the single submit action.
+**Migration**: Land trade inputs are included in the combined form section; the separate "Trade" button and trade phase are removed.
