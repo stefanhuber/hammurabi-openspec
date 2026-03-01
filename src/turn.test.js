@@ -6,6 +6,8 @@ import {
   checkGameOver,
 } from "./turn.js";
 import * as harvest from "./harvest.js";
+import * as plague from "./plague.js";
+import * as rats from "./rats.js";
 
 describe("validateFoodAllocation", () => {
   const defaultState = { grain: 2800, population: 100, land: 1000, turn: 1 };
@@ -108,6 +110,8 @@ describe("validateAcresToPlant", () => {
 describe("processTurn", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.spyOn(plague, "rollPlague").mockReturnValue({ occurred: false, deaths: 0 });
+    vi.spyOn(rats, "rollRats").mockReturnValue({ occurred: false, grainDestroyed: 0 });
   });
 
   it("should deduct food and seed cost from grain", () => {
@@ -198,6 +202,92 @@ describe("processTurn", () => {
     const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
     const { turnResult } = processTurn(state, 2000, 100);
     expect(turnResult.acresToBuy).toBeUndefined();
+  });
+
+  it("should halve population before starvation when plague occurs", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    plague.rollPlague.mockReturnValue({ occurred: true, deaths: 50 });
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // Post-plague population: 50
+    // Food: 2000 bushels → feeds 100 people, but only 50 alive → all 50 fed
+    const { newState, turnResult } = processTurn(state, 2000, 100);
+    expect(turnResult.plagueOccurred).toBe(true);
+    expect(turnResult.plagueDeaths).toBe(50);
+    expect(turnResult.peopleDied).toBe(0);
+    expect(newState.population).toBeGreaterThanOrEqual(50);
+  });
+
+  it("should calculate starvation against post-plague population", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    plague.rollPlague.mockReturnValue({ occurred: true, deaths: 50 });
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // Post-plague population: 50
+    // Food: 500 bushels → feeds 25, so 25 starve out of 50
+    const { turnResult } = processTurn(state, 500, 100);
+    expect(turnResult.peopleDied).toBe(25);
+  });
+
+  it("should reduce harvest when rats occur", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(4);
+    rats.rollRats.mockReturnValue({ occurred: true, grainDestroyed: 80 });
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // grain: 2800 - 2000(food) - 100(seeds) + (800 - 80)(harvest after rats) = 1420
+    const { newState, turnResult } = processTurn(state, 2000, 200);
+    expect(turnResult.ratsOccurred).toBe(true);
+    expect(turnResult.grainDestroyedByRats).toBe(80);
+    expect(turnResult.totalHarvest).toBe(800);
+    expect(newState.grain).toBe(1420);
+  });
+
+  it("should set starvationDefeat when >45% of post-plague population starves", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    // Plague: 100 → 50
+    plague.rollPlague.mockReturnValue({ occurred: true, deaths: 50 });
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // Post-plague: 50. Feed with 480 → feeds 24 → 26 starve → 52% > 45% → defeat
+    const { turnResult } = processTurn(state, 480, 100);
+    expect(turnResult.peopleDied).toBe(26);
+    expect(turnResult.starvationDefeat).toBe(true);
+  });
+
+  it("should not set starvationDefeat when <=45% of post-plague population starves", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    // Plague: 100 → 50
+    plague.rollPlague.mockReturnValue({ occurred: true, deaths: 50 });
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // Post-plague: 50. Feed with 560 → feeds 28 → 22 starve → 44% ≤ 45% → no defeat
+    const { turnResult } = processTurn(state, 560, 100);
+    expect(turnResult.peopleDied).toBe(22);
+    expect(turnResult.starvationDefeat).toBe(false);
+  });
+
+  it("should set starvationDefeat without plague when >45% starve", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // No plague. Feed with 1080 → feeds 54 → 46 starve → 46% > 45% → defeat
+    const { turnResult } = processTurn(state, 1080, 100);
+    expect(turnResult.peopleDied).toBe(46);
+    expect(turnResult.starvationDefeat).toBe(true);
+  });
+
+  it("should not set starvationDefeat at exactly 45%", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    // No plague. Feed with 1100 → feeds 55 → 45 starve → 45% → not > 45% → no defeat
+    const { turnResult } = processTurn(state, 1100, 100);
+    expect(turnResult.peopleDied).toBe(45);
+    expect(turnResult.starvationDefeat).toBe(false);
+  });
+
+  it("should include plague and rats info in turnResult when no events occur", () => {
+    vi.spyOn(harvest, "calculateYield").mockReturnValue(3);
+    const state = { grain: 2800, population: 100, land: 1000, turn: 1 };
+    const { turnResult } = processTurn(state, 2000, 100);
+    expect(turnResult.plagueOccurred).toBe(false);
+    expect(turnResult.plagueDeaths).toBe(0);
+    expect(turnResult.ratsOccurred).toBe(false);
+    expect(turnResult.grainDestroyedByRats).toBe(0);
+    expect(turnResult.starvationDefeat).toBe(false);
   });
 });
 

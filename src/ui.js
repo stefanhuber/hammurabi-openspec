@@ -17,6 +17,8 @@ const elements = {
   totalHarvest: () => document.getElementById("total-harvest"),
   peopleDied: () => document.getElementById("people-died"),
   immigrantsArrived: () => document.getElementById("immigrants-arrived"),
+  plagueResult: () => document.getElementById("plague-result"),
+  ratsResult: () => document.getElementById("rats-result"),
   nextTurnBtn: () => document.getElementById("next-turn-btn"),
   gameOver: () => document.getElementById("game-over"),
   gameOverTitle: () => document.getElementById("game-over-title"),
@@ -55,8 +57,24 @@ export function showTurnResults(turnResult) {
     elements.landTradeResult().textContent = "No land was traded.";
   }
 
+  if (turnResult.plagueOccurred) {
+    elements.plagueResult().textContent = `A plague struck! ${turnResult.plagueDeaths} people died from the plague.`;
+    elements.plagueResult().hidden = false;
+  } else {
+    elements.plagueResult().textContent = "";
+    elements.plagueResult().hidden = true;
+  }
+
   elements.yieldPerAcre().textContent = turnResult.yieldPerAcre;
   elements.totalHarvest().textContent = turnResult.totalHarvest;
+
+  if (turnResult.ratsOccurred) {
+    elements.ratsResult().textContent = `Rats destroyed ${turnResult.grainDestroyedByRats} bushels of grain!`;
+    elements.ratsResult().hidden = false;
+  } else {
+    elements.ratsResult().textContent = "";
+    elements.ratsResult().hidden = true;
+  }
 
   if (turnResult.peopleDied > 0) {
     elements.peopleDied().textContent = `${turnResult.peopleDied} people starved.`;
@@ -84,7 +102,7 @@ export function clearError() {
   elements.errorMessage().hidden = true;
 }
 
-export function showGameOver(won) {
+export function showGameOver(won, message) {
   elements.gameState().hidden = true;
   elements.playerInput().hidden = true;
   elements.turnResults().hidden = true;
@@ -93,11 +111,11 @@ export function showGameOver(won) {
   if (won) {
     elements.gameOverTitle().textContent = "Victory!";
     elements.gameOverMessage().textContent =
-      "Congratulations, Hammurabi! You have successfully ruled Samaria for 10 years.";
+      message || "Congratulations, Hammurabi! You have successfully ruled Samaria for 10 years.";
   } else {
     elements.gameOverTitle().textContent = "Defeat!";
     elements.gameOverMessage().textContent =
-      "Hammurabi, you have failed to sustain the city of Samaria. Your people have no grain left.";
+      message || "Hammurabi, you have failed to sustain the city of Samaria. Your people have no grain left.";
   }
 }
 

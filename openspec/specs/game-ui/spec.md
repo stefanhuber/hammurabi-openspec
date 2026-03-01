@@ -84,3 +84,65 @@ The UI SHALL display immigration information in the turn results when immigratio
 #### Scenario: Immigration reported in turn results
 - **WHEN** a turn is processed and immigrants arrive
 - **THEN** the UI SHALL show the number of immigrants who arrived
+
+### Requirement: Display plague results
+The UI SHALL display plague information in the turn results when a plague occurs.
+
+#### Scenario: Plague reported in turn results
+- **WHEN** a turn is processed and a plague occurred
+- **THEN** the UI SHALL show the number of people who died from the plague
+
+#### Scenario: No plague reported when none occurred
+- **WHEN** a turn is processed and no plague occurred
+- **THEN** the UI SHALL NOT display any plague-related message
+
+### Requirement: Display rat infestation results
+The UI SHALL display rat infestation information in the turn results when rats ate part of the harvest.
+
+#### Scenario: Rat infestation reported in turn results
+- **WHEN** a turn is processed and a rat infestation occurred
+- **THEN** the UI SHALL show the amount of grain destroyed by rats
+
+#### Scenario: No rat infestation reported when none occurred
+- **WHEN** a turn is processed and no rat infestation occurred
+- **THEN** the UI SHALL NOT display any rat-related message
+
+### Requirement: Display starvation defeat message
+The UI SHALL display a specific defeat message when the game is lost due to excessive starvation.
+
+#### Scenario: Starvation defeat message
+- **WHEN** more than 45% of the population starves in a single turn
+- **THEN** the UI SHALL display a defeat message indicating the ruler was overthrown due to mass starvation
+
+### Requirement: Display land price
+The UI SHALL display the current land price per acre at the start of each turn.
+
+#### Scenario: Player sees land price
+- **WHEN** a new turn begins
+- **THEN** the UI SHALL show the current price of land in bushels per acre
+
+### Requirement: Accept land trade input
+The UI SHALL provide input mechanisms for the player to specify acres to buy and acres to sell.
+
+#### Scenario: Player enters acres to buy
+- **WHEN** the player is prompted for land trading
+- **THEN** the UI SHALL accept a numeric value for acres to buy
+
+#### Scenario: Player enters acres to sell
+- **WHEN** the player is prompted for land trading
+- **THEN** the UI SHALL accept a numeric value for acres to sell
+
+#### Scenario: Invalid land trade is rejected
+- **WHEN** the player enters a trade that exceeds constraints (not enough grain to buy or not enough land to sell)
+- **THEN** the UI SHALL display an error message and allow the player to re-enter
+
+### Requirement: Display land trade results
+The UI SHALL display the results of the land trade in the turn report.
+
+#### Scenario: Buy trade shown in results
+- **WHEN** the player bought land during the turn
+- **THEN** the UI SHALL show how many acres were bought and the total cost
+
+#### Scenario: Sell trade shown in results
+- **WHEN** the player sold land during the turn
+- **THEN** the UI SHALL show how many acres were sold and the total revenue

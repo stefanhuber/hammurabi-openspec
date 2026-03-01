@@ -116,6 +116,12 @@ function handleSubmit() {
   );
   state = newState;
   renderState(state);
+
+  if (turnResult.starvationDefeat) {
+    showGameOver(false, "The people have overthrown you! More than 45% of the population starved in a single year.");
+    return;
+  }
+
   showTurnResults(turnResult);
 }
 
