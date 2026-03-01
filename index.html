@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hammurabi</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <h1>Hammurabi</h1>
+      <p class="intro">You are the ruler of the ancient city of Samaria in Mesopotamia.</p>
+
+      <section id="game-state">
+        <h2>Year <span id="turn-number">1</span> of 10</h2>
+        <ul>
+          <li>Population: <span id="population">100</span> people</li>
+          <li>Land: <span id="land">1000</span> acres</li>
+          <li>Grain in stock: <span id="grain">2800</span> bushels</li>
+        </ul>
+      </section>
+
+      <section id="player-input">
+        <label for="acres-input">How many acres do you wish to plant with seed?</label>
+        <div class="input-row">
+          <input type="number" id="acres-input" min="0" />
+          <button id="submit-btn">Plant</button>
+        </div>
+        <p id="error-message" class="error" hidden></p>
+      </section>
+
+      <section id="turn-results" hidden>
+        <h2>Harvest Report</h2>
+        <p>Yield per acre: <span id="yield-per-acre"></span> bushels</p>
+        <p>Total harvested: <span id="total-harvest"></span> bushels</p>
+        <button id="next-turn-btn">Continue to next year</button>
+      </section>
+
+      <section id="game-over" hidden>
+        <h2 id="game-over-title"></h2>
+        <p id="game-over-message"></p>
+        <button id="restart-btn">Play Again</button>
+      </section>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

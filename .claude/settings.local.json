@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(openspec new:*)",
+      "Bash(npx:*)",
+      "Bash(/c/Users/shu969/AppData/Roaming/fnm/node-versions/v22.22.0/installation/openspec:*)",
+      "Bash(pip show:*)",
+      "Bash(rm:*)",
+      "Bash(openspec status:*)",
+      "Bash(openspec instructions:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(openspec:*)",
+      "Bash(mv:*)",
+      "Bash(cp:*)"
+    ]
+  }
+}

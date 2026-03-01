@@ -1,0 +1,9 @@
+schema: spec-driven
+
+context: |
+  Tech stack: standalone static web app, with index.html, styles.css and javascript files, no frameworks
+  Javascript Bundler: vite, use vite for the production build and development server
+  Git: use git for version control, with a main branch and feature branches for new work, use conventional commits for commit messages
+  Code formatting: use Prettier/eslint for code formatting, with a 2-space indentation
+  Testing: use vite for testing, the js code should be unit tested
+  Code Quality: follow clean code principles, with clear and descriptive variable and function names, and modular code organization

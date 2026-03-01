@@ -1,0 +1,129 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background-color: #f5e6c8;
+  color: #3b2f1e;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+#app {
+  max-width: 600px;
+  width: 100%;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
+}
+
+.intro {
+  font-style: italic;
+  margin-bottom: 1.5rem;
+}
+
+#game-state {
+  background: #fff8ee;
+  border: 2px solid #c9a96e;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+#game-state h2 {
+  margin-bottom: 0.5rem;
+}
+
+#game-state ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#game-state li {
+  padding: 0.2rem 0;
+}
+
+#player-input {
+  margin-bottom: 1.5rem;
+}
+
+#player-input label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.input-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#acres-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 2px solid #c9a96e;
+  border-radius: 4px;
+  width: 150px;
+}
+
+button {
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  background: #8b6914;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #a07d1a;
+}
+
+.error {
+  color: #b22222;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+#turn-results {
+  background: #eef7ee;
+  border: 2px solid #6e9e6e;
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+#turn-results h2 {
+  margin-bottom: 0.5rem;
+}
+
+#turn-results p {
+  padding: 0.2rem 0;
+}
+
+#turn-results button {
+  margin-top: 0.75rem;
+}
+
+#game-over {
+  background: #fff3e0;
+  border: 2px solid #d4a04a;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+#game-over h2 {
+  margin-bottom: 0.5rem;
+}
+
+#game-over p {
+  margin-bottom: 1rem;
+}
